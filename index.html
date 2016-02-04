@@ -208,7 +208,135 @@
 					console.log("The button was pressed");//不過可以從瀏覽器發現來源顯示會不一樣
 				}
 			}])
+
+			.controller("MainCtrl_14",[function(){
+				var self = this;
+				self.tab = 'first';//初始值
+				self.open = function(tab_ref){
+					self.tab = tab_ref;
+				}
+			}])
+			.controller("SubCtrl_2",["ItemService_1", function(IS){
+				//將ItemService這個service注入給SubCtrl_2
+				//SubCtrl不再將列表實體化以及儲存，只負責執行重建與新增
+				var self = this;
+				self.list = function(){ //這個涵式只是負責回傳ItemService.list()的值
+					return IS.list(); 
+				};
+				self.add = function(){ //這個涵式只是負責將項目加到ItemService
+					IS.add({
+						id: self.list().length + 1,
+						label:"Item " + self.list().length
+					})
+				}
+			}])
+			.factory("ItemService_1",[function(){
+				//factory涵式依循類似controller的宣告形式
+				//列表儲存在ItemService 這個service中
+				var items = [
+					{id:1, label:"Item 0"},
+					{id:2, label:"Item 1"}
+				];
+				/*
+				在service定義涵式裡宣告的區域變數（上面這個items陣列）
+				對於這個service來說是私有變數
+				不能供使用者直接存取
+				*/
+				//在service定義涵式中，傳回一個物件，這會成為該service的API
+				return{
+					list: function(){
+						return items;
+					},
+					add: function(item){
+						items.push(item);
+					}
+				}
+				//該範例中定義的list與add，這些是service的使用者可以存取的涵式
+			}])
 			
+			.service("ItemService_2", [IS_2])
+			//service定義涵式目前是一個JS類別涵式，所以不會回傳任何值
+			//MainCtrl沿用MainCtrl_14 所以這裡就不再次宣告
+			//AngularJS會執行new ItemService_2()，然後回傳實體給依賴ItemService_2的所有涵式中
+			.controller("SubCtrl_3", ["ItemService_2", function(IS){
+				var self = this;
+				self.list =function(){
+					return IS.list();
+				}
+				self.add = function(){
+					IS.add({
+						id: self.list().length + 1,
+						label:"Item " + self.list().length
+					})
+				}
+			}])
+
+			.provider("ItemService_3", function(){
+				var haveDefaultItems = true;
+				this.disableDefaultItems = function(){
+					haveDefaultItems = false;
+				}
+				//這涵式取得非provider上面的
+				//相依性內容
+				this.$get = [function(){
+					var optItems = [];
+					if( haveDefaultItems ){
+						optItems = [
+							{id:1, label:"Item 0"},
+							{id:2, label:"Item 1"}
+						]
+					}
+					return new IS_3(optItems);
+				}];
+			})
+			// .config(["IS_Procider", function(IS_Procider){
+			// 	//了解provider更改組態的方式，改變shouldHaveDefaults的值為true，並試著執行這個範例
+			// 	var shouldHaveDefaults = false;
+
+			// 	//從伺服器取得組態，用某種方式設定shouldHaveDefaults，現在假設它的內容已經改變
+			// 	if( !shouldHaveDefaults ){
+			// 		IS_Procider.disableDefaultItems();
+			// 	}
+			// }])
+			.controller("SubCtrl_4", ["ItemService_3", function(IS){
+				var self = this;
+				self.list =function(){
+					return IS.list();
+				}
+				self.add = function(){
+					IS.add({
+						id: self.list().length + 1,
+						label:"Item " + self.list().length
+					})
+				}
+			}])
+
+			//service藉由它定義的實體（使用this關鍵字）
+			//上的method（add、list）來定義公用的API
+			function IS_2(){
+				var items = [
+					{id:1, label:"Item 0"},
+					{id:2, label:"Item 1"}
+				];//service的私有狀態設定為涵式定義裡的區域變數
+				this.list = function(){
+					return items;
+				};
+				this.add = function(item){
+					items.push(item);
+				};
+			}
+
+			function IS_3(opt_items){
+				var items = opt_items || [];
+
+				this.list = function(){
+					return items;
+				}
+				this.add = function(item){
+					items.push(item);
+				}
+			}
+		
 		</script>
 	</head>
 	<body  >
@@ -644,7 +772,7 @@
 			</div>
 			<div class="row">
 
-				<div class="col-sm-5" ng-controller="MainCtrl_12 as main_ctrl_1">
+				<div class="col-sm-4" ng-controller="MainCtrl_12 as main_ctrl_1">
 					<div class="panel panel-info" >
 						<div class="panel-heading">chapter5 / need-for-service</div>
 						<div class="panel-body">
@@ -652,10 +780,10 @@
 							<p>Hello controller</p>
 							<ul class="nav nav-tabs">
 								<li class="active" data-toggle="tab" ng-click="main_ctrl_1.open('first')">
-									<a href="#">Open First</a>
+									<a href="#">First</a>
 								</li>
 								<li data-toggle="tab" ng-click="main_ctrl_1.open('second')">
-									<a href="#">Open Second</a>
+									<a href="#">Second</a>
 								</li>
 							</ul><!-- 書裡是用button，這邊結合了BootStrap的TAB -->
 
@@ -695,7 +823,7 @@
 					</div>				
 				</div>
 
-				<div class="col-sm-3" ng-controller="MainCtrl_13 as ctrl_18">
+				<div class="col-sm-4" ng-controller="MainCtrl_13 as ctrl_18">
 					<div class="panel panel-info" >
 						<div class="panel-heading">chapter5 / log-example</div>
 						<div class="panel-body">
@@ -707,6 +835,149 @@
 						</div>
 					</div>				
 				</div>
+
+				<div class="col-sm-4" ng-controller="MainCtrl_14 as main_ctrl_2">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter5 / item-service-using-factory</div>
+						<div class="panel-body">
+
+							<p>Hello controllers!</p>
+							<ul class="nav nav-tabs">
+								<li class="active" data-toggle="tab" ng-click="main_ctrl_2.open('first')">
+									<a href="#">First</a>
+								</li>
+								<li data-toggle="tab" ng-click="main_ctrl_2.open('second')">
+									<a href="#">Second</a>
+								</li>
+							</ul><!-- 書裡是用button，這邊結合了BootStrap的TAB -->
+							<div ng-switch on="main_ctrl_2.tab">
+								<div ng-switch-when="first">
+									<div ng-controller="SubCtrl_2 as sub_ctrl_2">
+										<h3>First tab</h3>
+										<ul>
+											<li ng-repeat="item in sub_ctrl_2.list()">
+										<!--ng-repeat綁定的是SubCtrl_2的list()涵式，不是陣列list，所以要用list()
+											該list()涵式會取得從service ItemService的list()涵式回傳的items陣列 -->
+												<span ng-bind="item.label"></span>
+											</li>
+										</ul>
+										<button class="btn btn-primary" ng-click="sub_ctrl_2.add()">
+											增加更多item</button>
+									</div>
+								</div>
+								<div ng-switch-when="second">
+									<div ng-controller="SubCtrl_2 as sub_ctrl_2">
+										<h3>Second tab</h3>
+										<ul>
+											<li ng-repeat="item in sub_ctrl_2.list()">
+												<span ng-bind="item.label"></span>
+											</li>
+										</ul>
+										<button class="btn btn-primary" ng-click="sub_ctrl_2.add()">
+											增加更多item</button>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+					</div>				
+				</div>
+
+			</div>
+			<div class="row">
+
+				<div class="col-sm-4" ng-controller="MainCtrl_14 as main_ctrl_3">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter5 / item-service-using-service</div>
+						<div class="panel-body">
+
+							<p>Hello controllers!</p>
+							<ul class="nav nav-tabs">
+								<li class="active" data-toggle="tab" ng-click="main_ctrl_3.open('first')">
+									<a href="#">First</a>
+								</li>
+								<li data-toggle="tab" ng-click="main_ctrl_3.open('second')">
+									<a href="#">Second</a>
+								</li>
+							</ul><!-- 書裡是用button，這邊結合了BootStrap的TAB -->
+							<div ng-switch on="main_ctrl_3.tab">
+								<div ng-switch-when="first">
+									<div ng-controller="SubCtrl_3 as sub_ctrl_3">
+										<h3>First tab</h3>
+										<ul>
+											<li ng-repeat="item in sub_ctrl_3.list()">
+												<span ng-bind="item.label"></span>
+											</li>
+										</ul>
+										<button class="btn btn-primary" ng-click="sub_ctrl_3.add()">
+											增加更多item</button>
+									</div>
+								</div>
+								<div ng-switch-when="second">
+									<div ng-controller="SubCtrl_3 as sub_ctrl_3">
+										<h3>Second tab</h3>
+										<ul>
+											<li ng-repeat="item in sub_ctrl_3.list()">
+												<span ng-bind="item.label"></span>
+											</li>
+										</ul>
+										<button class="btn btn-primary" ng-click="sub_ctrl_3.add()">
+											增加更多item</button>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>				
+				</div>
+
+				<div class="col-sm-4" ng-controller="MainCtrl_14 as main_ctrl_4">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter5 / item-service-using-provider</div>
+						<div class="panel-body">
+
+							<p>Hello controllers!</p>
+							<ul class="nav nav-tabs">
+								<li class="active" data-toggle="tab" ng-click="main_ctrl_4.open('first')">
+									<a href="#">First</a>
+								</li>
+								<li data-toggle="tab" ng-click="main_ctrl_4.open('second')">
+									<a href="#">Second</a>
+								</li>
+							</ul><!-- 書裡是用button，這邊結合了BootStrap的TAB -->
+							<div ng-switch on="main_ctrl_4.tab">
+								<div ng-switch-when="first">
+									<div ng-controller="SubCtrl_4 as sub_ctrl_4">
+										<h3>First tab</h3>
+										<ul>
+											<li ng-repeat="item in sub_ctrl_4.list()">
+												<span ng-bind="item.label"></span>
+											</li>
+										</ul>
+										<button class="btn btn-primary" ng-click="sub_ctrl_4.add()">
+											增加更多item</button>
+									</div>
+								</div>
+								<div ng-switch-when="second">
+									<div ng-controller="SubCtrl_4 as sub_ctrl_4">
+										<h3>Second tab</h3>
+										<ul>
+											<li ng-repeat="item in sub_ctrl_4.list()">
+												<span ng-bind="item.label"></span>
+											</li>
+										</ul>
+										<button class="btn btn-primary" ng-click="sub_ctrl_4.add()">
+											增加更多item</button>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>				
+				</div>
+
+
 
 			</div>
 		</div>
