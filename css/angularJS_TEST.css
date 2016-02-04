@@ -1,0 +1,28 @@
+body{
+	font-family:微軟正黑體;
+	background-color: black;
+}
+div{
+	overflow: hidden;
+}
+div.container{
+	padding-top: 20px;
+}
+.done{
+	background-color: #A5FF7F;
+}
+.pending{
+	background-color: #FF7F7F;
+}
+.uname.ng-valid{
+	background-color: #A5FF7F;
+	/*這代表了當有類別username的元素有效時的背景顏色*/
+}
+.uname.ng-dirty.ng-invalid-required{
+	background-color: #FF7F7F;
+	/*這代表了當有類別username的元素有改變，但未達必填條件時*/
+}
+.uname.ng-dirty.ng-invalid-minlength{
+	background-color: #FFE97F;
+	/*這代表了當有類別username的元素有改變，但未達最小長度條件時*/
+}

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html ng-app="notesApp">
+	<head>
+		<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+		<!--width=device-width為適應各式裝置螢幕大小 initial-scale=1為初始比例-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+		<!--X-UA-Compatible設置IE兼容模式；有什麼最新的版本IE，就用什麼版本的標準模式。-->
+		<title>AngularJS TEST</title>
+
+		<!-- <link href="css/reset.css" rel="stylesheet">  --><!--ResetCSS-->	
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/angularJS_TEST.css" rel="stylesheet"><!--自己寫的css要最後一個讀取-->
+
+		<script src="js/jquery-2.2.0.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/angular.min.js"></script>
+		<script>
+			angular.module("notesApp",[])
+
+			.controller("MainCtrl_1",[function(){
+				var self = this;
+				self.helloMsg = "Hello";
+				var goodbyeMsg = "Goodbye";
+			}])
+
+			.controller("MainCtrl_2",[function(){
+				var self = this;
+				self.message = "Hello";
+				self.changeMessage = function(){
+					self.message = "Goodbye";
+				}
+			}])
+
+			.controller("MainCtrl_3",[function(){
+				var self = this;
+				self.notes = [
+					{id:1, label: 'First Note', done: false},
+					{id:2, label: 'Second Note', done: false},
+					{id:3, label: 'Done Note', done: true},
+					{id:4, label: 'Last Note', done: false}
+				];
+			}])
+
+			.controller("MainCtrl_4", [function(){
+				var self= this;
+				self.notes =[
+					{label: 'First Note', done: false, assignee: "Shyam"},
+					{label: 'Second Note', done: false},
+					{label: 'Done Note', done: true},
+					{label: 'Last Note', done: false, assignee: "Brad"}
+				];
+
+				self.getNoteClass = function(status){
+					return{
+						done: status,
+						pending: !status
+					}
+				}
+			}])
+
+			.controller("MainCtrl_5", [function(){
+				var self = this;
+				self.notes = {
+					shyam:{
+						id:1,
+						label: "First Note",
+						done: false
+					},
+					Misko:{
+						id:3,
+						label: "Finished Thrid Note",
+						done:true
+					},
+					brand:{
+						id:2,
+						label: "Second Note",
+						done: false
+					}
+				};
+			}])
+
+			.controller("MainCtrl_6", [function(){
+				var self = this;
+				var notes = [
+					{
+						id:1,
+						label:"First Note",
+						done:false,
+						someRandom: 31431
+					},
+					{
+						id:2,
+						label: "Second Note",
+						done: false
+
+					},
+					{
+						id:3,
+						label: "Finished Thrid Note",
+						done: true
+					}];
+				self.notes_1 = angular.copy(notes);
+				self.notes_2 = angular.copy(notes);
+				self.changeNotes = function(){
+					notes = [
+					{
+						id:1,
+						label:"Changed Note",
+						done:false,
+						someRandom: 4242
+					},
+					{
+						id:2,
+						label: "Second Note",
+						done: false
+
+					},
+					{
+						id:3,
+						label: "Finished Thrid Note",
+						done: true
+					}];
+				self.notes_1 = angular.copy(notes);
+				self.notes_2 = angular.copy(notes);
+				};
+			}])
+
+			.controller("MainCtrl_7", [function(){
+				var self = this;
+				self.change = function(){
+					self.username = "changed";
+					self.password = "password";
+				};
+				self.submit = function() {
+					console.log("User clicked submit with", self.username, self.password);
+				};
+			}])
+
+			.controller("MainCtrl_8", [function(){
+				var self = this;
+				self.submit = function() {
+					console.log("User clicked submit with", self.user);
+				};
+			}])
+
+			.controller("MainCtrl_9", [function(){
+				var self = this;
+				self.submit_1 = function() {
+					//建立送給伺服器的user物件
+					var user = {username: self.username, password: self.password}
+					console.log("First from submit with", user);
+				};
+				self.submit_2 = function() {
+					console.log("Second from submit with", self.user);
+				};
+			}])
+
+			.controller("MainCtrl_10",[function(){
+				var self = this;
+				self.sports = [
+					{label:"棒球", selected:"YES"},
+					{label:"板球", selected:"NO"},
+					{label:"足球", selected:"NO"},
+					{label:"游泳", selected:"YES"}
+				];
+			}])
+
+			.controller("MainCtrl_11",[function(){
+				var self = this;
+				self.countries = [
+					{label:"美國", id:1},
+					{label:"日本", id:2},
+					{label:"台灣", id:3}
+				];
+				self.selectedCountryId = 2;
+				self.selectedCountry = self.countries[1];
+			}])
+
+			.controller("MainCtrl_12",[function(){
+				var self = this;
+				self.tab = 'first';//初始值
+				self.open = function(tab_ref){
+					self.tab = tab_ref;
+				}
+			}])
+
+			.controller("SubCtrl_1",[function(){
+				var self = this;
+				self.list = [
+					{id:1, label:"Item 0"},
+					{id:2, label:"Item 1"}
+				]
+
+				self.add = function(){
+					self.list.push({
+						id: self.list.length + 1,
+						label:"Item " + self.list.length
+					});
+				}
+			}])
+
+			.controller("MainCtrl_13",["$log", function($test){
+				//在陣列中以字串方式增加相依性內容（這就是安全式相依注入）
+				//把他宣告為字串後，接著以變數的方式（自訂的名稱）把他注入涵式中，並傳遞這個涵式為陣列最後一個引數
+				var self = this;
+				self.logStuff = function(){
+					$test.log("The button was pressed"); //跟console.log一樣的功能 將字串記錄到console中
+					console.log("The button was pressed");//不過可以從瀏覽器發現來源顯示會不一樣
+				}
+			}])
+			
+		</script>
+	</head>
+	<body  >
+
+		<header class="jumbotron">
+			<div class="container">
+				<h1>AngularJS TEST</h1>
+			</div>
+		</header>
+
+		<div class="container">
+			<div class="row">
+
+				<div class="col-sm-3">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter1 / hello-world</div>
+						<div class="panel-body">
+							<p>1+1 = {{1+1}}</p>
+							<input type="text" ng-model="name" />
+							<p>Hello! <span ng-bind="name"></span></p>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-3" ng-controller="MainCtrl_1 as ctrl_1">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter2 / hello-controller</div>
+						<div class="panel-body">
+
+							{{ctrl_1.helloMsg}} AngularJS.
+							<br/>
+							{{ctrl_1.goodbyeMsg}} AngularJS.
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-3" ng-controller="MainCtrl_2 as ctrl_2">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter2 / controller-click-message</div>
+						<div class="panel-body">
+
+							{{ctrl_2.message}} AngularJS.
+							<button ng-click="ctrl_2.changeMessage()">Change Message</button>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-3" ng-controller="MainCtrl_3 as ctrl_3">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter2 / ng-repeat-example-1</div>
+						<div class="panel-body">
+
+							<div ng-repeat="note in ctrl_3.notes">
+								<span >{{note.label}}</span>
+								<span  ng-bind="note.done"></span>
+							</div>
+
+						</div>
+					</div>					
+				</div>
+
+			</div>
+			<div class="row">
+
+				<div class="col-sm-6" ng-controller="MainCtrl_4 as ctrl_4">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter2 / more-directives</div>
+						<div class="panel-body">
+
+							<div ng-repeat="note in ctrl_4.notes" ng-class="ctrl_4.getNoteClass( note.done )">
+								<!-- ng-class被用來選擇性的套用與移除元素的CSS類別
+								如果回傳的是字串就直接套用；回傳的是物件就依據key/value，value是true就回傳key -->
+								<span >{{note.label}}</span>
+								<span class="assignee" ng-show="note.assignee" ng-bind="note.assignee"></span>
+								<!-- ng-show及ng-hide用來處理HTML元素的隱藏與顯現，或根據其布林值來決定顯現與否
+								這個範例及是如果note.assignee是true（也就是有值時顯示，反之隱藏） -->
+							</div>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-6" ng-controller="MainCtrl_5 as ctrl_5">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter2 / repeat.object</div>
+						<div class="panel-body">
+
+							<div ng-repeat="(author, note) in ctrl_5.notes" >
+								<!-- ng-repeat用於陣列時會依照順序排列，用物件時則是以（key, value）的方式呈現 -->
+								<span >{{note.id}}</span>
+								<span >{{note.label}}</span>
+								<span >{{note.done}}</span>
+								<span ng-bind="author"></span>
+							</div>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-12" ng-controller="MainCtrl_3 as ctrl_6">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter2 / ng-repeat-example-1</div>
+						<div class="panel-body">
+
+							<div class="col-sm-3" ng-repeat="note in ctrl_6.notes">
+								<div>First Element: <b>{{$first}}</b></div>
+								<div>Middle Element: <b>{{$middle}}</b></div>
+								<div>Last Element: <b>{{$last}}</b></div>
+						<!-- $first、$middle、$last是布林值，會告知特定項目是否為陣列的第一項、中間項以及最後一項 -->
+								<div>Index of Element: <b>{{$index}}</b></div>
+								<!-- $index提供項目在陣列中的索引位置 -->
+								<div>At Even Position: <b>{{$even}}</b></div>
+								<div>At Odd Position: <b>{{$odd}}</b></div>
+								<!-- $even、$odd告知項在陣列中的索引是否為奇數或偶數 -->
+
+								<span >{{note.label}}</span>
+								<span  ng-bind="note.done"></span>
+								<hr/>
+							</div>
+
+						</div>
+					</div>					
+				</div>
+			</div>
+			<div class="row">
+
+				<div class="col-sm-6" ng-controller="MainCtrl_6 as ctrl_7">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter2 / ng-repeat-track-by-id</div>
+						<div class="panel-body">
+
+							<button class="btn btn-info btn-block" ng-click="ctrl_7.changeNotes()">
+								Change Notes
+							</button>
+							<br/>DOM Elements change every time someone clicks
+							<div ng-repeat="note in ctrl_7.notes_1">
+								【{{note.$$hashKey}}】
+								<span >{{note.label}}</span>
+								<span  ng-bind="note.done"></span>		
+							</div>
+							<hr/>
+							<br/>DOM Elements are reused every time someone clicks
+							<div ng-repeat="note in ctrl_7.notes_2 track by note.id">
+						   <!-- 使用track by 來追蹤，因為會告訴每個元素唯一的識別號（note.id）
+								所以DOM元素會依據物件的ID而被重覆使用
+								利用表示式track by來進行應用程式裡的DOM操作最佳化，這通常會用在資料庫回傳的IDs上 -->
+								【{{note.$$hashKey}}】
+								<span >{{note.label}}</span>
+								<span  ng-bind="note.done"></span>
+							</div>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-6" ng-controller="MainCtrl_3 as ctrl_8">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter2 / ng-repeat-across-elements</div>
+						<div class="panel-body">
+
+							<table class="table table-striped">
+								<tr ng-repeat-start="note in ctrl_8.notes">
+									<td>{{note.label}}</td>
+								</tr>
+								<tr ng-repeat-end>
+									<td>Done: {{note.done}}</td>
+								</tr>
+								<!-- 一般的ng-repeat是重複單一容器，如果需要重複的是個別元素
+								使用ng-repear-start（標記此元素為重複器的開始）
+								以及ng-repeat-end（表記此元素為重複器的結尾） -->
+							</table>
+
+						</div>
+					</div>					
+				</div>			
+			</div>
+			<div class="row">
+				<div class="col-sm-3" ng-controller="MainCtrl_7 as ctrl_9">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter4 / simple-ng-model-2</div>
+						<div class="panel-body">
+
+							<input type="text" ng-model="ctrl_9.username"/>
+							<input type="password" ng-model="ctrl_9.password"/><hr/>
+							<button ng-click="ctrl_9.change()">改變</button>
+							<button ng-click="ctrl_9.submit()">送出</button>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-3" ng-controller="MainCtrl_8 as ctrl_10">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter4 / simple-form</div>
+						<div class="panel-body">
+
+							<form ng-submit="ctrl_10.submit()">
+								<!-- ng-submit牽扯到表單時，submit事件：按submit鈕或是在文字框Enter送出
+								都會觸發ng-submit；反之ng-click只有點擊按鈕時才會觸發 -->
+								<input type="text" ng-model="ctrl_10.user.username"/>
+								<input type="password" ng-model="ctrl_10.user.password"/>
+								<!-- 使用ng-model時，AngularJS會自動建立關係鏈（chain）中必要的物件和Key來實體化一個資料綁定的連結
+								這個範例中，使用者輸入username跟password欄位某些內容前，都不會有user物件存在
+								輸入第一個字元後就會建立user物件，並且內容值會指派給物件中對應的欄位 -->
+								<hr/><input type="submit" value="送出" />
+								<b>{{ctrl_10.user}}</b>
+							</form>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-3" ng-controller="MainCtrl_9 as ctrl_11">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter4 / two-form-databinding</div>
+						<div class="panel-body">
+
+							<form ng-submit="ctrl_11.submit_1()">
+								<input type="text" ng-model="ctrl_11.username"/>
+								<input type="password" ng-model="ctrl_11.password"/>
+								<input type="submit" value="送出" />
+							</form><hr/>
+							<!-- 第一個表單綁定controller上的username與password
+							第二個表單綁定controller裡的user物件
+							第一個表單需要從controller取用那些欄位，然後放到物件裡或類似的作業，才能將物件傳給伺服器
+							而第二個表單呈現是直接模塑成為controller裡的物件，這樣取用表單的值可以避免處理額外的動作 -->
+							<form ng-submit="ctrl_11.submit_2()">
+								<input type="text" ng-model="ctrl_11.user.username"/>
+								<input type="password" ng-model="ctrl_11.user.password"/>
+								<input type="submit" value="送出" />
+							</form>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-3" ng-controller="MainCtrl_8 as ctrl_12">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter4 / form-validation</div>
+						<div class="panel-body">
+
+							<form ng-submit="ctrl_12.submit()" name="myForm">
+								<input type="text" ng-model="ctrl_12.user.username" ng-minlength="4" required/>
+								<input type="password" ng-model="ctrl_12.user.password" required/>
+								<input type="date" ng-model="ctrl_12.user.date" ng-required/>
+								<input type="number" ng-model="ctrl_12.user.number" ng-maxlength="5"/>
+								<input type="email" ng-model="ctrl_12.user.email" /><hr/>
+								<button type="submit" ng-disabled="myForm.$invalid" class="btn btn-block btn-info">送出</button>
+							</form>
+							<!--按鈕加上ng-disabled，當未達到驗證條件時會將按鈕失效禁止送出
+							myForm.$invalid 是布林值，代表了表單myForm的條件是否都達成-->
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-6" ng-controller="MainCtrl_8 as ctrl_13">
+					<div class="panel panel-info"  >
+						<div class="panel-heading">chapter4 / form-error-message</div>
+						<div class="panel-body">
+
+							<form ng-submit="ctrl_13.submit()" name="myForm">
+								<div class="form-group">
+									<label for="uname">Name</label>
+									<input name="uname" type="text" ng-model="ctrl_13.user.username" ng-minlength="4" required/>
+									<span ng-show="myForm.uname.$error.required">必填</span>
+									<span ng-show="myForm.uname.$error.minlength">長度必須大於4個字元</span>
+									<span ng-show="myForm.uname.$invalid">這個輸入無效</span>
+								</div>
+								<div class="form-group">
+									<label for="pwd">Password</label>
+									<input name="pwd" type="password" ng-model="ctrl_13.user.password" ng-required="true"/>
+									<span ng-show="myForm.pwd.$error.required">必填</span>
+								</div>
+
+								<button type="submit" ng-disabled="myForm.$invalid" class="btn btn-block btn-info">送出</button>
+							</form>
+
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6" ng-controller="MainCtrl_8 as ctrl_14">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter4 / form-styling</div>
+						<div class="panel-body">
+							<!-- 這個部分要配合CSS檔 -->
+							<form ng-submit="ctrl_14.submit()" name="myForm">
+								<div class="form-group">
+									<p>Name</p>
+									<input class="uname" type="text" ng-model="ctrl_14.user.username" ng-minlength="4" required/>
+									<span ng-show="myForm.uname.$error.minlength">長度必須大於4個字元</span>
+								</div>
+
+								<button type="submit" ng-disabled="myForm.$invalid" class="btn btn-block btn-info">送出</button>
+							</form>
+
+						</div>
+					</div>				
+				</div>
+
+			</div>
+			<div class="row">
+
+				<div class="col-sm-4" ng-controller="MainCtrl_8 as ctrl_15">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter4 / nested-forms</div>
+						<div class="panel-body">
+
+							<form  name="myForm" ng-submit="ctrl_15.submit()">
+								<div class="form-group">
+									<label>Name</label>
+									<input class="uname" name="uname" type="text" ng-model="ctrl_15.user.username" ng-minlength="4" required/>
+									
+								</div>
+								<div class="form-group">
+									<label>Password</label>
+									<input class="pwd" name="pwd" type="password" ng-model="ctrl_15.user.password">
+								</div>
+								<!-- AngularJS提供的巢狀表單 ng-form 可以給予一個名稱來做辨識以及擷取 -->
+								<ng-form name="profile">
+									<input name="firstName" type="text" ng-model="ctrl_15.user.profile.firstName" required/>
+									<input name="middleName" type="text" ng-model="ctrl_15.user.profile.middleName" required/>
+									<input name="lastName" type="text" ng-model="ctrl_15.user.profile.lastName" required/>
+									<input name="dob" type="date" ng-model="ctrl_15.user.profile.dob" required/>
+								</ng-form>
+								<span ng-show="myForm.profile.$invalid">請填寫個人資料</span>
+								<span ng-show="profile.firstName.$error.required">請填寫姓</span>
+
+								<button type="submit" ng-disabled="myForm.$invalid" class="btn btn-block btn-info">送出</button>
+								<!-- 子表單的profile.$invalid狀態可以直接透過父表單的myForm.$invalid做存取 -->
+							</form>
+
+						</div>
+					</div>				
+				</div>
+
+				<div class="col-sm-8" ng-controller="MainCtrl_10 as ctrl_16">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter4 / checkbox-example</div>
+						<div class="panel-body">
+							<p>你最喜歡的運動</p>
+							<div ng-repeat="sport in ctrl_16.sports"  class="col-sm-6">
+								<label ng-bind="sport.label"></label>
+								<div>
+									With Binding:
+									<input type="checkbox" ng-model="sport.selected" ng-true-value="'YES'" ng-false-value="'NO'">
+									<!-- 第一個核取方塊實施傳統雙向資料綁定
+									當選取時代表true所以ng-true-value就會回傳所設定的值YES
+									並且觸發ng-checked，設定第二個核取方塊為勾選狀態-->
+								</div>
+								<div>
+									Using ng-checked:
+									<input type="checkbox" ng-checked="sport.selected === 'YES'"/>
+									<!-- 第二個核取方塊使用ng-checked來顯示ng-model的狀態
+									所以配合ng-model的內容有所改變時，會更新核取方塊的勾選
+									但是勾選或取消核取方塊本身並不會影響model的值 -->								
+								</div>
+								<!-- 因此要雙向資料綁定就只使用ng-model；要單向資料綁定就使用ng-checked -->
+								<div>
+									Current state:【{{sport.selected}}】
+								</div><hr/>
+							</div>
+						</div>
+					</div>				
+				</div>
+
+			</div>
+			<div class="row">
+
+				<div class="col-sm-3">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter4 / radio-example</div>
+						<div class="panel-body">
+
+							<div ng-init="user = {gender_1: 'female'}">
+								<!-- ng-init以物件的方式設定初始值（user.gender_1） -->
+								<input type="radio" name="gender" ng-model="user.gender_1" value="male">男
+								<input type="radio" name="gender" ng-model="user.gender_1" value="female">女<hr/>
+								<b>你的選擇【{{user.gender_1}}】</b>
+							</div>
+
+						</div>
+					</div>				
+				</div>
+
+				<div class="col-sm-5">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter4 / radio-example</div>
+						<div class="panel-body">
+
+							<div ng-init="otherGender = 'other'">
+								<!-- ng-init設定otherGender的初始值 -->
+								<input type="radio" name="gender" ng-model="user.gender" value="male">男
+								<input type="radio" name="gender" ng-model="user.gender" value="female">女
+								<input type="radio" name="gender" ng-model="user.gender" value="{{otherGender}}">其他(自行輸入)
+								<input type="text" ng-model="otherGender" /><hr/>
+								<b>你的選擇【{{user.gender}}】</b>
+							</div>
+
+						</div>
+					</div>				
+				</div>
+
+				<div class="col-sm-4" ng-controller="MainCtrl_11 as ctrl_17">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter4 / select-example</div>
+						<div class="panel-body">
+
+							<div>
+								<select ng-model="ctrl_17.selectedCountryId" 
+								ng-options="c.id as c.label for c in ctrl_17.countries">
+							<!--ng-options告訴AngularJS為counctries陣列的每一個項目建立一個選項
+								c.id為選項的值；c.label為選項的名 -->
+								</select>
+								Selected Country ID:【<b>{{ctrl_17.selectedCountryId}}</b>】
+							</div>
+					   <!-- 第一個綁定selectedCountryId，綁定的數字（self.selectedCountryId = 2）
+							第二個綁定selectedCountry，綁定的實際物件（self.selectedCountry = self.countries[1]） -->
+							<div>
+								<select ng-model="ctrl_17.selectedCountry" 
+								ng-options="c.label for c in ctrl_17.countries">
+					   	   <!-- 這裡ng-options省略了值，假定了每個項目就是實際的值（因次會得到每個物件） -->
+								</select>
+								Selected Country:【<b>{{ctrl_17.selectedCountry}}</b>】
+							</div>
+							<!-- 由於這兩個選擇方塊對應的是不同model，因此雖然是同樣來源陣列，但改變並不會互相影響 -->
+						</div>
+					</div>				
+				</div>
+
+			</div>
+			<div class="row">
+
+				<div class="col-sm-5" ng-controller="MainCtrl_12 as main_ctrl_1">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter5 / need-for-service</div>
+						<div class="panel-body">
+
+							<p>Hello controller</p>
+							<ul class="nav nav-tabs">
+								<li class="active" data-toggle="tab" ng-click="main_ctrl_1.open('first')">
+									<a href="#">Open First</a>
+								</li>
+								<li data-toggle="tab" ng-click="main_ctrl_1.open('second')">
+									<a href="#">Open Second</a>
+								</li>
+							</ul><!-- 書裡是用button，這邊結合了BootStrap的TAB -->
+
+							<div ng-switch on="main_ctrl_1.tab">
+							<!--ng-switch就像是程式中的switch，它帶有一個變數（使用on屬性來處理）
+								ng-switch-when為它的子單元，附帶它可能的值，根據不同的值來顯示或隱藏元素 -->
+								<div ng-switch-when="first">
+									<div ng-controller="SubCtrl_1 as sub_ctrl_1">
+										<h3>First tab</h3>
+										<ul>
+											<li ng-repeat="item in sub_ctrl_1.list">
+												<span ng-bind="item.label"></span>
+											</li>
+										</ul>
+										<button class="btn btn-primary" ng-click="sub_ctrl_1.add()">
+											增加更多item</button>
+									</div>
+								</div>
+							<!--主體由MainCtrl_12控制，並保存分頁的顯示狀態
+								內容由SubCtrl_1控制，控制顯示的內容以及一個新增Item的function -->
+								<div ng-switch-when="second">
+									<div ng-controller="SubCtrl_1 as sub_ctrl_1">
+										<h3>Second tab</h3>
+										<ul>
+											<li ng-repeat="item in sub_ctrl_1.list">
+												<span ng-bind="item.label"></span>
+											</li>
+										</ul>
+										<button class="btn btn-primary" ng-click="sub_ctrl_1.add()">
+											增加更多item</button>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+					</div>				
+				</div>
+
+				<div class="col-sm-3" ng-controller="MainCtrl_13 as ctrl_18">
+					<div class="panel panel-info" >
+						<div class="panel-heading">chapter5 / log-example</div>
+						<div class="panel-body">
+
+							<p>Hello Services!</p>
+							<button class="btn btn-info btn-block" ng-click="ctrl_18.logStuff()">
+								Log something</button>
+
+						</div>
+					</div>				
+				</div>
+
+			</div>
+		</div>
+
+	</body>
+</html>
