@@ -340,16 +340,19 @@
 		</script>
 	</head>
 	<body  >
-
-		<header class="jumbotron">
-			<div class="container">
+		<header>
+			<div>
 				<h1>AngularJS TEST</h1>
 			</div>
+			<ul class="nav nav-tabs nav-justified">
+				<li  class="active"><a href="#">1</a></li>
+				<li ><a href="2.html">2</a></li>
+				<li ><a href="#">3</a></li>
+			</ul>
 		</header>
 
 		<div class="container">
 			<div class="row">
-
 				<div class="col-sm-3">
 					<div class="panel panel-info">
 						<div class="panel-heading">chapter1 / hello-world</div>
@@ -772,7 +775,7 @@
 			</div>
 			<div class="row">
 
-				<div class="col-sm-4" ng-controller="MainCtrl_12 as main_ctrl_1">
+				<div class="col-sm-8" ng-controller="MainCtrl_12 as main_ctrl_1">
 					<div class="panel panel-info" >
 						<div class="panel-heading">chapter5 / need-for-service</div>
 						<div class="panel-body">
@@ -836,6 +839,9 @@
 					</div>				
 				</div>
 
+			</div>
+			<div class="row">
+
 				<div class="col-sm-4" ng-controller="MainCtrl_14 as main_ctrl_2">
 					<div class="panel panel-info" >
 						<div class="panel-heading">chapter5 / item-service-using-factory</div>
@@ -883,9 +889,6 @@
 						</div>
 					</div>				
 				</div>
-
-			</div>
-			<div class="row">
 
 				<div class="col-sm-4" ng-controller="MainCtrl_14 as main_ctrl_3">
 					<div class="panel panel-info" >
