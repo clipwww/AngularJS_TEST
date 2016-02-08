@@ -165,6 +165,14 @@
 				.when('/three', {
 					redirectTo: '/second' //把three重新定向second
 				})
+				.when('/detail/:detId',{
+					template: '<h3>Loaded {{ myCtrl.detailId }}' + 'and query String is {{ myCtrl.qStr }} </h3>',
+					controller:['$routeParams', function($routeParams){
+						this.detailId = $routeParams.detId;
+						this.qStr = $routeParams.q;
+					}],
+					controllerAs: 'myCtrl'
+				})
 				.otherwise({redirectTo:'/'});
 				//它會保留在瀏覽器的歷史紀錄，因此可以直接使用上一頁與下一頁按鈕去瀏覽應用程式的相關頁面
 			}])
@@ -227,7 +235,7 @@
 
 							<div class="image" ng-repeat="flickr in ctrl.items">
 								<a href="{{ flickr.link }}">
-									<img src="{{ flickr.media.m.replace('_m','_s') }}" alt="{{ flickr.title }}"/>
+									<img ng-src="{{ flickr.media.m.replace('_m','_s') }}" alt="{{ flickr.title }}"/>
 								</a>
 							</div>
 
@@ -377,6 +385,7 @@
 								<li><a href="#/second">Second Route</a></li>
 								<li><a href="#/view_test">View Test Route</a></li>
 								<li><a href="#/three">Redirect To Second Route</a></li>
+								<li><a href="#/detail/123?q=QQ">$routeParams Route</a></li>
 								<li><a href="#/asdasdasd">不存在 Route</a></li>
 							</ul>
 
