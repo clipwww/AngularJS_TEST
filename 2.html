@@ -14,8 +14,10 @@
 		<script src="js/jquery-2.2.0.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/angular.min.js"></script>
+		<script src="js/angular-route.min.js"></script><!-- 使用ngRoute路由模組需要另外載入 -->
 		<script>
-			angular.module("notesApp",[])
+			angular.module("notesApp",["ngRoute"])
+			//第10章ngRoute路由，建立模組時，指定它依賴ngRoute模組
 			.controller("MainCtrl_1",["$http",function($http){
 				var self = this;
 				self.message = "init";
@@ -72,12 +74,99 @@
 						function(response){
 							console.log(response);
 							self.items = response.data.items;
-							console.log(self.items);
 						},
 						function(error){
 							console.error("ERROR"+error);
 						})
 				};
+			}])
+
+			.controller("FilterCtrl_1", [function(){
+				var self = this;
+				self.amount = 1024;
+				self.totalCost = 4906;
+				self.name = "Shyam Seshadri";
+				self.obj = {test:"value", num:123};
+				self.startTime = new Date().getTime();
+			}])
+
+			.controller("FilterCtrl_2", [function(){
+				var self = this;
+				self.notes = [
+					{label: "FC Todo", type: 'chore', done: false},
+					{label: "FT Todo", type: 'task', done: false},
+					{label: "FF Todo", type: 'fun', done: true},
+					{label: "SC Todo", type: 'chore', done: false},
+					{label: "ST Todo", type: 'task', done: true},
+					{label: "SF Todo", type: 'fun', done: true},
+					{label: "TC Todo", type: 'chore', done: false},
+					{label: "TT Todo", type: 'task', done: false},
+					{label: "TF Todo", type: 'fun', done: false},
+				]
+
+				self.sortOrder = ['+type' , '-label'];
+				//預設的排列方式是以type做升幕排序（由小到大 a~z）；同樣的話再以label以降冪排序（大到小 z~a）
+
+				self.filterOptions = {
+					'string': '',
+					'object': {done:false, label: 'F'}, //找尋label中有F字元且done為false的
+					'function': function(note){
+						return note.type === 'task' && note.done === false; //找尋type為task且done為false的
+					}
+				}
+
+				self.currentFilter = 'string';//預設以string來過濾
+			}])
+
+			.controller("FilterCtrl_3", [function(){
+				var self = this;
+				self.startTime = new Date().getTime();
+				self.someTimeAgo = new Date().getTime() - (1000*60*60*4);
+			}])
+			.filter('timeAgo', [function(){
+				var ONE_MINUTE = 1000*60;
+				var ONE_HOUR = ONE_MINUTE * 60;
+				var ONE_DAY = ONE_HOUR * 24;
+				var ONE_MONTH = ONE_DAY * 30;
+
+				//自訂filter時要回傳一個涵式，每次使用這個filter時就會呼叫這個涵式
+				return function(ts){
+					var currentTime = new Date().getTime();
+					var diff = currentTime - ts;
+					//console.log(diff);
+					if( diff < ONE_MINUTE){
+						return 'seconds ago';
+					}else if( diff < ONE_HOUR ){
+						return 'minutes ago';
+					}else if( diff < ONE_DAY ){
+						return 'hours ago';
+					}else if( diff < ONE_MONTH ){
+						return 'days ago';
+					}else{
+						return 'months ago';
+					}
+				}
+			}])
+			//使用$routeProvider定義routes
+			.config(['$routeProvider', function($RP){
+				//透過簡單的anchor標籤設定
+				//when涵式帶有兩個參數:
+				//1.此特定route被套用時所指定之URL或URL regex（正規表示式）
+				//2.遇到此特定route時指定所需要處理內容的組態物件
+				$RP.when('/', {
+					template: '<h5>這是預設Route</h5>'
+				})
+				.when('/second', {
+					template: '<h5>這是Second Route</h5>'
+				})
+				.when('/view_test', {
+					templateUrl: 'views/test.html'
+				})
+				.when('/three', {
+					redirectTo: '/second' //把three重新定向second
+				})
+				.otherwise({redirectTo:'/'});
+				//它會保留在瀏覽器的歷史紀錄，因此可以直接使用上一頁與下一頁按鈕去瀏覽應用程式的相關頁面
 			}])
 
 
@@ -98,7 +187,7 @@
 		<div class="container">
 			<div class="row">
 
-				<div class="col-sm-4" ng-controller="MainCtrl_1 as ctrl">
+				<div class="col-sm-6" ng-controller="MainCtrl_1 as ctrl">
 					<div class="panel panel-info">
 						<div class="panel-heading">chapter6 / http-get-example</div>
 						<div class="panel-body">
@@ -110,7 +199,7 @@
 					</div>					
 				</div>
 
-				<div class="col-sm-4" ng-controller="MainCtrl_2 as ctrl">
+				<div class="col-sm-6" ng-controller="MainCtrl_2 as ctrl">
 					<div class="panel panel-info">
 						<div class="panel-heading">chapter6 / http-post-example</div>
 						<div class="panel-body">
@@ -131,7 +220,7 @@
 								<input type="text" ng-model="ctrl.config.params.id">我的flickr　或
 								<input type="text" ng-model="ctrl.config.params.tags">搜尋tag
 							</div>
-							config.params：{{ctrl.config.params}}
+							config.params：【{{ctrl.config.params}}】
 							<hr/>
 
 							<button class="btn btn-info btn-block" ng-click="ctrl.jsonpTest()">JSONP</button>
@@ -143,6 +232,165 @@
 							</div>
 
 						</div>
+					</div>					
+				</div>
+
+			</div>
+			<div class="row">
+
+				<div class="col-sm-4" ng-controller="FilterCtrl_1 as ctrl">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter8 / filters-example</div>
+						<div class="panel-body">
+
+							<p>
+								數字：{{ctrl.amount | number}}
+							</p>
+							<p>
+								貨幣總成本：{{ctrl.totalCost | currency}}
+							</p>
+							<p>
+								名子（全大寫）：{{ctrl.name | uppercase}}
+							</p>
+							<p>
+								名子（全小寫）：{{ctrl.name | lowercase}}
+							</p>
+							<p>
+								開始時間：{{ctrl.startTime | date:"medium"}}
+							</p>
+							<p>
+								名子（全小寫）+只取5個字元：{{ctrl.name | lowercase | limitTo:5}}
+							</p>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-8" >
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter8 / filters-number-string</div>
+						<div class="panel-body">
+
+							<ul ng-controller="FilterCtrl_1 as ctrl">
+								<li>
+									貨幣-預設currency：{{ctrl.totalCost | currency}}
+								</li>
+								<li>
+									貨幣-英鎊：{{ctrl.totalCost | currency:"&#163"}}
+								</li>
+								<li>
+									數字-number：{{ctrl.amount | number}}
+								</li>
+								<li>
+									數字-小數點後4位：{{ctrl.amount | number:4}}
+								</li>
+								<li>
+									Json過濾器：{{ctrl.obj | json }}
+								</li>
+								<li>
+									時間：{{ctrl.startTime }}
+								</li>
+								<li>
+									時間-預設date：{{ctrl.startTime | date }}
+								</li>
+								<li>
+									時間-medium：{{ctrl.startTime | date:"medium"}}
+								</li>
+								<li>
+									時間-custom：{{ctrl.startTime | date:"yyyy-M/d"}}
+								</li>
+							</ul>
+
+						</div>
+					</div>					
+				</div>
+			</div>
+			<div class="row">
+
+				<div class="col-sm-6" ng-controller="FilterCtrl_2 as ctrl">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter8 / filters-arrays</div>
+						<div class="panel-body">
+
+							<button ng-click="ctrl.currentFilter ='string'">
+								Filter with string</button>
+							<button ng-click="ctrl.currentFilter ='object'">
+								Filter with object</button>
+							<button ng-click="ctrl.currentFilter ='function'">
+								Filter with function</button>
+							<!-- 按鈕用來切換對應的過濾模式 -->
+							Filter Text
+							<input type="text" ng-model="ctrl.filterOptions.string"/>
+							<!-- 使用字串過濾，會搜尋所有字串，留下有符合的 -->
+							Show Done Only
+							<input type="checkbox" ng-model="ctrl.filterOptions['object'].done"/>
+							<!-- 物件對應的done，勾選時是找出true的；未溝選擇反之-->
+							<ul>
+								<li ng-repeat="note in ctrl.notes | 
+											filter:ctrl.filterOptions[ctrl.currentFilter] |
+											orderBy: ctrl.sortOrder |
+											limitTo:9" >
+									{{note.label}} - {{note.type}} - {{note.done}}
+								</li>
+							</ul>
+
+						</div>
+					</div>					
+				</div>
+
+				<div class="col-sm-6" ng-controller="FilterCtrl_3 as ctrl">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter8 / custom-filters</div>
+						<div class="panel-body">
+
+							<p>
+								時間：{{ctrl.startTime}}
+							</p>
+							<p>
+								時間（DateTime）：{{ctrl.startTime | date:"medium"}}
+							</p>
+							<p>
+								時間（自訂Filter）：{{ctrl.startTime | timeAgo}}
+							</p>
+							<p>
+								someTimeAgo：{{ctrl.someTimeAgo | date:"short"}}
+							</p>
+							<p>
+								someTimeAgo（自訂Filter）：{{ctrl.someTimeAgo | timeAgo }}
+							</p>
+
+						</div>
+					</div>					
+				</div>
+
+			</div>
+			<div class="row">
+
+				<div class="col-sm-4">
+					<div class="panel panel-info">
+						<div class="panel-heading">chapter10 / simple-routing</div>
+						<div class="panel-body">
+
+							<h3>AngularJS Routing Application</h3>
+							<ul>
+								<li><a href="#/">預設Route</a></li>
+								<li><a href="#/second">Second Route</a></li>
+								<li><a href="#/view_test">View Test Route</a></li>
+								<li><a href="#/three">Redirect To Second Route</a></li>
+								<li><a href="#/asdasdasd">不存在 Route</a></li>
+							</ul>
+
+						</div>	
+					</div>					
+				</div>
+
+				<div class="col-sm-4">
+					<div class="panel panel-info">
+						<div class="panel-body">
+
+							<div ng-view></div>
+
+						</div>	
 					</div>					
 				</div>
 
